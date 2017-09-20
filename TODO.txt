@@ -1,1 +1,147 @@
-C:/Users/xzzpig/Documents/MEGAsync/PigProgramManager计划.txt
+功能:
+    子命令:
+        install:    #安装软件
+            参数:
+                -d  #安装在指定目录(留空表示当前目录)
+                -y  #同意危险操作
+            流程: 
+                安装
+                配置
+        show        #显示软件名称
+        search      #搜索软件
+        upgrade:    #更新软件
+            参数:
+                -y  #免除确认(危险操作、主版本号更新)
+                -f  #强制更新到最新版本,包括更新号改变
+            流程:
+                卸载
+                安装
+        noupgrade   #禁止/允许软件更新
+        update      #更新软件索引
+        remove:     #移除软件
+            流程:
+                卸载
+                清理
+        autoremove    #移除为被依赖的软件
+        setup       #重新配置软件
+            流程:
+                清理
+                配置
+        make        #生成软件库列表文件
+        gui         #显示为GUI界面
+    参数:
+        -v          #显示更多输出
+
+配置:
+    默认安装路径
+    软件库URL
+    临时文件夹
+    Bin路径(希望被用户加入到path中)
+    DB路径
+
+安装说明文件:         #program.json
+    名称
+    别名
+    版本
+    官网
+    LICENSE:
+        名称
+        网址
+    大小:
+        下载
+        安装
+    版本规则:
+        说明: 
+            通过规则来匹配出版本信息(主版本号${0}、次版本号${1}、更新号${2})
+            留空或没有则表示版本规则为 '${0}.${1}.${2}'
+            ${0}、${1}、${2}必须为整数
+            更新时，主版本号改变需要确认或加参数'-y',更新号改变默认不升级除非加参数 -f
+        eg:
+            版本: v1.1.1-release
+            规则: v${0}.${1}.${2}-release
+    信息
+    系统             #正则(自动转化小写)
+    依赖             #>名称:版本
+    插件
+    执行流程时发生错误是否失败 #>ErrorName:true|false
+    流程:
+        安装: 用于下载，解压，复制等操作并一定要部署好软件实体
+        配置: 用于创建快捷方式，链接文件等操作
+        卸载: 删除软件实体
+        清理: 删除快捷方式，连接文件，删除配置文件等操作
+        重装: 重装流程的收尾工作
+    流程操作:
+        加载插件: LoadPlugin
+        下载: Download,url,save
+        解压: Unzip,file,to
+        复制: Copy,from,to
+        删除: Delete,file
+        命令行: CMD
+        执行脚本: Script,type,url
+        链接文件: Link,source,target
+        创建快捷方式: Lik,name,target
+        正则校验: RegCheck,str,regpx,failErr
+        确认: Comfirm,str,failErr
+
+支持变量: #基本格式:${变量名:参数...} eg.'${Version:QQ,0}',不支持嵌套
+    Dir:
+        Programs: 默认安装路径 √
+        of:
+            $Name: 某项目的文件安装路径
+        Program: 项目安装路径(包含项目名称) √
+        Temps: 临时文件夹 √
+        Temp: 项目临时文件夹 √
+        Bin: 可执行文件链接地址,用于存放可执行文件的链接、快捷方式 √
+        PPM: PigProgramManager所在目录 √
+        Home: 用户的home文件夹 √
+    URL:
+        JSON: 此json的URL
+        DOT: 去除json名称的URL
+    Version:
+        $Name: 某项目的最新版本 eg. ${Version:QQ,0}
+        0-2: 返回的是主版本号(0),次版本号(1),更新号(2)
+    Var:
+        $Name: 获取参数的内容 eg. 对于参数 '-d ./' 获取到的是文本 './',对于参数 '-v' 获取到的是文本'true'
+
+安装流程:
+    读取program.json
+    加载插件
+    检测依赖->T 缺失依赖
+        T:安装依赖
+    变量替换(ArguementProvider)
+    执行流程(JsonExecuter): 安装->配置
+    清除临时文件
+
+数据库:
+    all_:
+        name:str
+        version_0: int
+        version_1: int
+        version_2: int
+        depends:str
+        url:str
+        installed:bool
+    installed_:
+        name:str
+        version_0: int
+        version_1: int
+        version_2: int
+        json:str
+        loc:str
+        depends:bool
+        soft:bool
+        disableUpgrade:bool
+    所有软件:
+        名称
+        版本: [0,2]
+        依赖
+        说明文件URL
+        是否安装
+    安装软件:
+        名称
+        版本: [0,2]
+        说明文件(String)
+        安装路径
+        被依赖数
+        是否作为依赖安装
+        是否禁止更新
