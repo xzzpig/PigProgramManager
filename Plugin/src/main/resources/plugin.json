@@ -1,0 +1,6 @@
+{
+  "name": "PigProgramManager",
+  "main": "com.xzzpig.pigprogrammanager.MainPlugin",
+  "describe": "The BasePlugin of PigProgramManager",
+  "depends": []
+}

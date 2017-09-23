@@ -1,0 +1,42 @@
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+allprojects {
+	version = "1.0"
+	repositories {
+		maven { url 'https://jitpack.io' }
+	}
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'maven'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+	
+	sourceCompatibility = 1.8 // java 8
+	targetCompatibility = 1.8
+	
+	task sourcesJar(type: Jar, dependsOn: classes) {
+	    classifier = 'sources'
+	    from sourceSets.main.allSource
+	}
+	task javaDoc(type: Javadoc) {
+		options.encoding = "UTF-8"
+		failOnError  false
+		source = sourceSets.main.allJava
+		classpath += configurations.compile
+	}
+	task javadocJar(type: Jar, dependsOn: javaDoc) {
+	    classifier = 'javadoc'
+	    from javadoc.destinationDir
+	}
+	
+	artifacts {
+	    archives sourcesJar
+	    archives javadocJar
+	}
+	
+	tasks.withType(JavaCompile) {  
+    	options.encoding = "UTF-8"  
+	}
+}
