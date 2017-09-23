@@ -38,11 +38,19 @@ public class DownloadJE implements JsonExecutor {
             }
         }
         API.echo("准备下载...", "!" + jsonObject.getString("url"));
-        URLConnection connection;
-        try {
-            connection = url.openConnection();
-        } catch (IOException e) {
-            throw new JsonExecuteException("URLConnectionOpenException", e.getLocalizedMessage());
+        URLConnection connection = null;
+        for (int i = 0; i < 5; i++) {
+            try {
+                connection = url.openConnection();
+                break;
+            } catch (IOException e) {
+                if (i < 4) {
+                    API.echo("连接失败,正在重试");
+                    continue;
+                }
+                API.verbException(e);
+                throw new JsonExecuteException("URLConnectionOpenException", e.getLocalizedMessage());
+            }
         }
         connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
         try (InputStream in = new BufferedInputStream(connection.getInputStream()); OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {

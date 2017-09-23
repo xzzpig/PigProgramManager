@@ -73,15 +73,15 @@
     流程操作:
         加载插件: LoadPlugin
         下载: Download,url,save
-        解压: Unzip,file,to
+        解压: Unzip,file,to,noname
         复制: Copy,from,to
         删除: Delete,file
-        命令行: CMD
+        命令行: CMD,out,err
         执行脚本: Script,type,url
         链接文件: Link,source,target
         创建快捷方式: Lik,name,target
-        正则校验: RegCheck,str,regpx,failErr
-        确认: Comfirm,str,failErr
+        正则校验: RegCheck,str,regpx,failErr,failMsg
+        确认: Comfirm,str,failErr,failMsg
 
 支持变量: #基本格式:${变量名:参数...} eg.'${Version:QQ,0}',不支持嵌套
     Dir:

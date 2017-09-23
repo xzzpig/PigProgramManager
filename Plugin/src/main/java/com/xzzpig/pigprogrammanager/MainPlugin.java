@@ -5,7 +5,7 @@ import com.xzzpig.pigprogrammanager.api.CommandExecutor;
 import com.xzzpig.pigprogrammanager.api.JsonExecutor;
 import com.xzzpig.pigprogrammanager.api.VariableProvider;
 import com.xzzpig.pigprogrammanager.command.*;
-import com.xzzpig.pigprogrammanager.json.DownloadJE;
+import com.xzzpig.pigprogrammanager.json.*;
 import com.xzzpig.pigprogrammanager.plugin.PPMPlugin;
 import com.xzzpig.pigprogrammanager.variableprovider.DirVP;
 import com.xzzpig.pigprogrammanager.variableprovider.URLVP;
@@ -16,7 +16,7 @@ public class MainPlugin extends PPMPlugin {
 
     private static final VariableProvider[] VARIABLE_PROVIDERS = new VariableProvider[]{new VersionVP(), new DirVP(), new VarVP(), new URLVP()};
     private static final CommandExecutor[] COMMAND_EXECUTORS = new CommandExecutor[]{new SetupCMD(), new AutoRemoveCMD(), new NoUpgradeCMD(), new UpgradeCMD(), new RemoveCMD(), new ShowCMD(), new MakeCMD(), new UpdateCMD(), new SearchCMD(), new InstallCMD()};
-    private static final JsonExecutor[] JSON_EXECUTORS = new JsonExecutor[]{new DownloadJE()};
+    private static final JsonExecutor[] JSON_EXECUTORS = new JsonExecutor[]{new ConfirmJE(), new RegCheckJE(), new CMDJE(), new DeleteJE(), new MoveJE(), new UnzipJE(), new DownloadJE()};
 
     @Override public void onEnable() {
         super.onEnable();

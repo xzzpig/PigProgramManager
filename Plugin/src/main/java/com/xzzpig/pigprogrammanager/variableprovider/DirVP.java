@@ -31,7 +31,7 @@ public class DirVP implements VariableProvider {
                 return System.getenv("USERPROFILE");
             case "Program":
                 if (API.getCommand() != null && API.getCommand().hasSign("d"))
-                    return API.getCommand().signMap.getOrDefault("d", new File("./").getAbsolutePath());
+                    return API.getCommand().signMap.getOrDefault("d", new File("./").getAbsolutePath()).replace('\\', '/');
                 else return null;
             case "Temp":
                 if (API.getConfig().has("tmpDir") && API.getCommand() != null && API.getCommand().signMap.containsKey("program"))

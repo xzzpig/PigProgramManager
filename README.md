@@ -99,27 +99,42 @@
 
     [
     {
-        "name":"Download",
-        "url":"",
-        "save":""
+        "name":"Download",  #下载文件
+        "url":"",           #下载路径
+        "save":""           #保存路径
     },
     {
-        "name":"Unzip",
-        "file":"",
-        "to":""
+        "name":"Unzip",     #解压文件
+        "file":"",          #文件路径
+        "to":"",            #目标路径
+        "noname":true       #是否不包含压缩包文件名
     },
     {
-        "name":"Copy",
+        "name":"Move",      #移动文件
         "from":"",
         "to":""
     },
     {
-        "name":"Move",
-        "from":"",
-        "to":""
-    },
-    {
-        "name":"Delete",
+        "name":"Delete",    #删除文件
         "file":""
+    },
+    {
+        "name":"CMD",       #执行命令
+        "cmd":"",
+        "out":true,         #是否显示标准输出
+        "err":false         #是否显示标准错误输出
+    },
+    {
+        "name":"Comfirm",   #需要确认
+        "msgs":[""],
+        "failErr":"",
+        "failMsg":""
+    },
+    {
+        "name":"RegCheck",  #正则校验
+        "str":"",
+        "reg":"",
+        "failErr":"",
+        "failMsg":""
     }
     ]

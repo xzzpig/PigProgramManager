@@ -214,11 +214,14 @@ public class API {
     }
 
     @com.github.xzzpig.pigutils.annoiation.API
-    public static boolean executeJsonObjects(JSONArray jsonArray) {
+    public static boolean executeJsonObjects(@NotNull JSONArray jsonArray) {
+        int len = jsonArray.length();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.optJSONObject(i);
+            String name = jsonObject.optString("name");
+            API.echo("开始执行步骤:" + name + "(" + (i + 1) + "/" + len + ")");
             try {
-                executeJsonObject(jsonObject.optString("name"), jsonObject);
+                executeJsonObject(name, jsonObject);
             } catch (JsonExecuteException e) {
                 if (ignoredException.contains(e.name)) {
                     echo("Json执行发生了错误", e.name + ":" + e.msg, "(已忽略)");
