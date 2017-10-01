@@ -10,6 +10,11 @@ Plugin/build/
 Plugin/out/
 Plugin/bin/
 Plugin/out/
+WinPlugin/.settings/
+WinPlugin/build/
+WinPlugin/out/
+WinPlugin/bin/
+WinPlugin/out/
 *.class
 .classpath
 .project
