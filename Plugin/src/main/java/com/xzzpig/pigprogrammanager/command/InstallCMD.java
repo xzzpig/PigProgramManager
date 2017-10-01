@@ -34,7 +34,9 @@ public class InstallCMD implements CommandExecutor {
         cmd.signMap.put("d", new File(cmd.signMap.get("d")).getAbsolutePath());
         JSONObject jsonObject;
         try {
+            System.out.print("开始下载软件安装配置文件");
             jsonObject = API.downloadProgramJson(program);
+            System.out.println("(完成)");
         } catch (Exception e) {
             API.verbException(e);
             return "Program安装说明文件下载失败";

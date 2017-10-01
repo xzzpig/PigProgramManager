@@ -296,7 +296,7 @@ public class API {
 
     public static void loadPlugins() {
         API.echo("!开始加载插件");
-        File pluginDir = new File("./plugins/");
+        File pluginDir = new File(getPPMDir(), "plugins");
         if (pluginDir.exists()) {
             Arrays.stream(pluginDir.listFiles()).filter(File::isFile).forEach(API::loadPlugin);
         } else {
@@ -307,6 +307,7 @@ public class API {
 
     @com.github.xzzpig.pigutils.annoiation.API
     public static void echo(@NotNull Object... msgs) {
+        StringBuffer sb = new StringBuffer();
         String str;
         for (Object obj : msgs) {
             str = obj + "";
@@ -315,10 +316,11 @@ public class API {
                     str = str.replaceFirst("!", "");
                 else
                     continue;
-            System.out.print(str);
-            System.out.print(" ");
+            sb.append(str).append(' ');
         }
-        System.out.println();
+        str = sb.toString();
+        if (!str.matches(" *"))
+            System.out.println(str);
     }
 
     public static File getPPMDir() {

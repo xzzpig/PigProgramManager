@@ -19,7 +19,7 @@ public class UnzipJE implements JsonExecutor {
      * @param unzipFilePath 解压后的文件保存的路径
      * @param noname        解压后的文件保存的路径是否包含压缩文件的文件名。true-不包含；false-包含
      */
-    public static void unzip(String zipFilePath, String unzipFilePath, boolean noname) {
+    public static void unzip(String zipFilePath, String unzipFilePath, boolean noname) throws JsonExecuteException {
         int count = -1;
         int buffer = 1024;
         File file = null;
@@ -35,18 +35,17 @@ public class UnzipJE implements JsonExecutor {
             unzipFilePath = unzipFilePath + fileName + "/";
         }
         //savepath = path.substring(0, path.lastIndexOf(".")) + File.separator; //保存解压文件目录
-        new File(unzipFilePath).mkdir(); //创建保存目录
-        API.needConfirm("将文件" + zipFilePath, "压缩到" + unzipFilePath);
+        File unzipFile2 = new File(unzipFilePath);
+        if (!unzipFile2.exists() && !unzipFile2.mkdirs()) //创建保存目录
+            throw new JsonExecuteException("UnzipFailedException", "无法创建目标文件夹:" + unzipFilePath);
+        API.needConfirm("将文件" + new File(zipFilePath).getAbsolutePath(), "压缩到" + unzipFile2.getAbsolutePath());
         ZipFile zipFile = null;
         try {
             zipFile = new ZipFile(zipFilePath, Charset.defaultCharset());//解决中文乱码问题
             Enumeration<?> entries = zipFile.entries();//.getEntries();
-
             while (entries.hasMoreElements()) {
                 byte buf[] = new byte[buffer];
-
                 ZipEntry entry = (ZipEntry) entries.nextElement();
-
                 String filename = entry.getName();
                 boolean mkdir = false;
                 if (filename.lastIndexOf("/") != -1) { //检查此文件是否带有文件夹
@@ -65,25 +64,22 @@ public class UnzipJE implements JsonExecutor {
                     }
                 }
                 file.createNewFile(); //创建文件
-
                 is = zipFile.getInputStream(entry);
                 fos = new FileOutputStream(file);
                 bos = new BufferedOutputStream(fos, buffer);
-
                 while ((count = is.read(buf)) > -1) {
                     bos.write(buf, 0, count);
                 }
                 bos.flush();
                 bos.close();
                 fos.close();
-
                 is.close();
             }
-
             zipFile.close();
 
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            API.verbException(ioe);
+            throw new JsonExecuteException("UnzipFailedException", "解压" + unzipFilePath + "失败");
         } finally {
             try {
                 if (bos != null) {
@@ -116,9 +112,8 @@ public class UnzipJE implements JsonExecutor {
             return false;
         try {
             unzip(jsonObject.optString("file"), jsonObject.optString("to"), jsonObject.optBoolean("noname", true));
-        } catch (Exception e) {
-            API.verbException(e);
-            throw new JsonExecuteException("UnzipFailedException", e.getLocalizedMessage());
+        } catch (JsonExecuteException e) {
+            throw e;
         }
         return true;
     }

@@ -3,8 +3,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.xzzpig.PigSubUtils:Plugin:b3f3b1c430'
-    compile 'com.github.xzzpig.PigSubUtils:Database:b3f3b1c430'
+    compile 'com.github.xzzpig.PigSubUtils:Plugin:06220166df'
+    compile 'com.github.xzzpig.PigSubUtils:Database:06220166df'
     compile 'org.xerial:sqlite-jdbc:3.7.2'
     testCompile 'junit:junit:4.12'
 }

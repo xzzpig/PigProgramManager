@@ -1,6 +1,7 @@
 .gradle/
 .vscode/
 .settings/
+out/
 Core/.settings/
 Core/bin/
 Core/build/

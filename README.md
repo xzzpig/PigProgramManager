@@ -136,5 +136,36 @@
         "reg":"",
         "failErr":"",
         "failMsg":""
+    },
+    {
+        "name":"AddPath",   #添加path到用户环境变量Path中(Windows Only)
+        "path":"",
+        "ignoreFailed":true
+    },
+    {
+        "name":"Link",
+        "from":"",
+        "to":"",
+        "ignoreFailed":true
+    },
+    {
+        "name":"Script",
+        "type":"",
+        "url":""
+    },
+    {
+        "name":"Registry",
+        "action:"",         #添加/设置:SET|删除:DELETE
+        "dir":"",
+        "key":"",
+        "type":"",
+        "value":"",
+        "ignoreFailed":true
+    },
+    {
+        "name":"ConfirmDo", #确认执行
+        "actions":[],       #同意后执行的流程
+        "msg":"",
+        "careFail":false    #是否关注执行失败
     }
     ]

@@ -40,7 +40,7 @@ public class Command {
             }
         }
         if (cmd == null)
-            throw new IllegalArgumentException("no Command in these signs");
+            cmd = "help";
     }
 
     public boolean hasSign(String sign) {

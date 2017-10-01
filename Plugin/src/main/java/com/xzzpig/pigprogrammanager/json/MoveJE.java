@@ -19,12 +19,18 @@ public class MoveJE implements JsonExecutor {
             return false;
         File from = new File(jsonObject.optString("from"));
         File to = new File(jsonObject.optString("to"));
+        if (to.exists())
+            API.deleteDir(to);
+        try {
+            to.getParentFile().mkdirs();
+        } catch (Exception e) {}
         API.needConfirm("移动文件", from.getAbsolutePath(), "到", to.getAbsolutePath());
         try {
             if (!new File(from.getAbsolutePath()).renameTo(new File(to.getAbsolutePath())))
                 throw new RuntimeException(from + " copy to " + to + " failed");
         } catch (Exception e) {
-            throw new JsonExecuteException("CopyFailedException", e.getLocalizedMessage());
+            API.verbException(e);
+            throw new JsonExecuteException("MoveFailedException", e.getLocalizedMessage());
         }
         return true;
     }

@@ -1,0 +1,6 @@
+{
+  "name": "PigProgramManager",
+  "main": "com.xzzpig.pigprogrammanager.plugin.WinPlugin",
+  "describe": "The Plugin of PigProgramManager which add some windows only support",
+  "depends": []
+}

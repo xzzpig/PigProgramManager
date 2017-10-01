@@ -1,0 +1,9 @@
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile project(':Core')
+//    compile fileTree(dir:'libs',includes: ["*.jar"])
+    testCompile 'junit:junit:4.12'
+}

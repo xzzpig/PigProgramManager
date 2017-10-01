@@ -1,3 +1,4 @@
 rootProject.name = 'PigProgramManager'
 include 'Core'
 include 'Plugin'
+include 'WinPlugin'

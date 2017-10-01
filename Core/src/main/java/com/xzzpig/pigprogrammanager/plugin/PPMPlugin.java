@@ -33,6 +33,11 @@ public abstract class PPMPlugin extends JavaPlugin {
             API.registerValuableProvider(variableProvider);
     }
 
+    /**
+     * 在准备开始执行命令前执行(仅一次)
+     */
+    public void onBeforeCommand() {}
+
     public @NotNull String getDescribe() {
         return getInfos().getOrDefault("describe", "");
     }
