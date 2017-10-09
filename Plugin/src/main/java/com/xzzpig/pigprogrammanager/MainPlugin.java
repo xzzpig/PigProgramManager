@@ -16,7 +16,7 @@ public class MainPlugin extends PPMPlugin {
 
     private static final VariableProvider[] VARIABLE_PROVIDERS = new VariableProvider[]{new VersionVP(), new DirVP(), new VarVP(), new URLVP()};
     private static final CommandExecutor[] COMMAND_EXECUTORS = new CommandExecutor[]{new SetupCMD(), new AutoRemoveCMD(), new NoUpgradeCMD(), new UpgradeCMD(), new RemoveCMD(), new ShowCMD(), new MakeCMD(), new UpdateCMD(), new SearchCMD(), new InstallCMD()};
-    private static final JsonExecutor[] JSON_EXECUTORS = new JsonExecutor[]{new ConfirmDoJE(), new ScriptJE(), new LinkJE(), new ConfirmJE(), new RegCheckJE(), new CMDJE(), new DeleteJE(), new MoveJE(), new UnzipJE(), new DownloadJE()};
+    private static final JsonExecutor[] JSON_EXECUTORS = new JsonExecutor[]{new ExistInPathJE(), new ExistsJE(), new IfJE(), new CheckMD5JE(), new ConfirmDoJE(), new ScriptJE(), new LinkJE(), new ConfirmJE(), new RegCheckJE(), new CMDJE(), new DeleteJE(), new MoveJE(), new UnzipJE(), new DownloadJE()};
 
     @Override public void onEnable() {
         super.onEnable();

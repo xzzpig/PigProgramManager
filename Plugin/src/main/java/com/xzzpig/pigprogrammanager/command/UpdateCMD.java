@@ -32,6 +32,8 @@ public class UpdateCMD implements CommandExecutor {
         try {
             API.database.getTable("all_").drop();
             API.database.createTable("all_", API.TABLE_CONSTRUCT_ALL);
+            API.database.getTable("aliasmap").drop();
+            API.database.createTable("aliasmap", API.TABLE_CONSTRUCT_ALIASMAP);
             repertory.toList().stream().map(obj->obj + "").forEach(this::updateURL);
         } catch (SQLException e) {
             return "数据库打开/操作失败";
@@ -51,30 +53,42 @@ public class UpdateCMD implements CommandExecutor {
         }
         Database db = API.database;
         Table table_all = db.getTable("all_");
-        Map<String, Object> map = new HashMap<>();
+        Table table_aliasmap = db.getTable("aliasmap");
+        Map<String, Object> map_all = new HashMap<>();
+        Map<String, Object> map_alias = new HashMap<>();
         try (InputStream inputStream = url.openStream(); Scanner scanner = new Scanner(inputStream)) {
             String s;
             String os_name = System.getProperty("os.name").toLowerCase();
             while (scanner.hasNextLine()) {
                 s = scanner.nextLine();
-                map.clear();
+                map_all.clear();
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     if (!os_name.matches(jsonObject.optString("os", "").toLowerCase()))
                         continue;
-                    map.put("name", jsonObject.optString("name"));
+                    String name = jsonObject.optString("name");
+                    map_all.put("name", name);
                     String[] versions = jsonObject.optString("version").split("\\.");
-                    map.put("version_0", Integer.parseInt(versions[0]));
-                    map.put("version_1", Integer.parseInt(versions[1]));
-                    map.put("version_2", Integer.parseInt(versions[2]));
-                    map.put("depends", jsonObject.optString("depends", "[]"));
-                    map.put("url", jsonObject.optString("url"));
-                    table_all.insert(map);
+                    map_all.put("version_0", Integer.parseInt(versions[0]));
+                    map_all.put("version_1", Integer.parseInt(versions[1]));
+                    map_all.put("version_2", Integer.parseInt(versions[2]));
+                    map_all.put("depends", jsonObject.optString("depends", "[]"));
+                    map_all.put("url", jsonObject.optString("url"));
+                    table_all.insert(map_all);
+
+                    map_alias.put("name", name);
+                    map_alias.put("alias", name);
+
+                    table_aliasmap.insert(map_alias);
+
                     if (jsonObject.has("alias")) {
                         JSONArray jsonArray = jsonObject.optJSONArray("alias");
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            map.put("name", jsonArray.optString(i));
-                            table_all.insert(map);
+                            String alias = jsonArray.optString(i);
+                            //                            map_all.put("name", alias);
+                            //                            table_all.insert(map_all);
+                            map_alias.put("alias", alias);
+                            table_aliasmap.insert(map_alias);
                         }
                     }
                 } catch (JSONException e) {

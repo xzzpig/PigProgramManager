@@ -55,17 +55,22 @@ public class DownloadJE implements JsonExecutor {
         connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
         try (InputStream in = new BufferedInputStream(connection.getInputStream()); OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
             long size_all = connection.getContentLengthLong();
-            API.needConfirm("从" + url, "将下载" + (size_all / 1024) + "KB", "到" + saveFile.getAbsolutePath());
-            int size_per, len, process = 0;
+            if (!API.needConfirm("从" + url, "将下载" + (size_all / 1024) + "KB", "到" + saveFile.getAbsolutePath())) {
+                throw new JsonExecuteException("DownloadException", "下载被取消");
+            }
+            int size_per, len, downloaded = 0, process = 0, p;
             if (size_all == -1) size_per = 1024;
-            else size_per = (int) (size_all / 99);
+            else size_per = (int) (size_all / 100);
             byte[] bytes = new byte[size_per];
             System.out.print('[');
             while ((len = in.read(bytes)) != -1) {
                 out.write(bytes, 0, len);
-                process++;
-                if (process % 10 == 0)
+                downloaded += len;
+                p = (int) (downloaded * 10 / size_all);
+                if (p != process) {
                     System.out.print('*');
+                    process = p;
+                }
             }
             out.flush();
             System.out.println(']');

@@ -19,7 +19,9 @@ public class CMDJE implements JsonExecutor {
         cmd = API.solveVars(cmd);
         boolean need_err = jsonObject.optBoolean("err", false);
         boolean need_out = jsonObject.optBoolean("out", true);
-        API.needConfirm("执行命令:" + cmd);
+        if (!API.needConfirm("执行命令:" + cmd)) {
+            throw new JsonExecuteException("CMDExecuteFailedException", "ConfirmCanceled");
+        }
         try {
             Process process = Runtime.getRuntime().exec(cmd);
             if (need_out)

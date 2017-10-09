@@ -38,7 +38,9 @@ public class UnzipJE implements JsonExecutor {
         File unzipFile2 = new File(unzipFilePath);
         if (!unzipFile2.exists() && !unzipFile2.mkdirs()) //创建保存目录
             throw new JsonExecuteException("UnzipFailedException", "无法创建目标文件夹:" + unzipFilePath);
-        API.needConfirm("将文件" + new File(zipFilePath).getAbsolutePath(), "压缩到" + unzipFile2.getAbsolutePath());
+        if (!API.needConfirm("将文件" + new File(zipFilePath).getAbsolutePath(), "解压到" + unzipFile2.getAbsolutePath())) {
+            throw new JsonExecuteException("UnzipFailedException", "ConfirmCanceled");
+        }
         ZipFile zipFile = null;
         try {
             zipFile = new ZipFile(zipFilePath, Charset.defaultCharset());//解决中文乱码问题

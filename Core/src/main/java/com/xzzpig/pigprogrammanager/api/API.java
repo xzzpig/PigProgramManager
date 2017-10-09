@@ -8,6 +8,7 @@ import com.github.xzzpig.pigutils.json.JSONArray;
 import com.github.xzzpig.pigutils.json.JSONException;
 import com.github.xzzpig.pigutils.json.JSONObject;
 import com.github.xzzpig.pigutils.json.JSONTokener;
+import com.github.xzzpig.pigutils.plugin.AfterPlugin;
 import com.github.xzzpig.pigutils.plugin.PluginManager;
 
 import java.io.*;
@@ -88,6 +89,16 @@ public class API {
                     .setName("disableUpgrade")
                     .setType(DBFieldType.Int)
                     .setDefaultValue(0));
+
+    public static final TableConstruct TABLE_CONSTRUCT_ALIASMAP = new TableConstruct()
+            .addDBField(new DBField()
+                    .setName("name")
+                    .setType(DBFieldType.Text)
+                    .setNotNull(true))
+            .addDBField(new DBField()
+                    .setName("alias")
+                    .setType(DBFieldType.Text)
+                    .setNotNull(true));
     @NotNull
     private static final Map<String, List<VariableProvider>> VARIABLE_PROVIDER_MAP = new HashMap<>();
     @NotNull
@@ -408,6 +419,10 @@ public class API {
                 echo("!正在新建表'installed'");
                 initDatabase_Installed(database);
             }
+            if (!database.isTableExists("aliasmap")) {
+                echo("!正在新建表'aliasnmap'");
+                initDatabase_AliasMap(database);
+            }
         } catch (SQLException e) {
             verbException(e);
         } catch (ClassNotFoundException e) {
@@ -424,23 +439,25 @@ public class API {
     }
 
     private static void initDatabase_All(Database db) throws SQLException {
-        Table table = db.createTable("all_", TABLE_CONSTRUCT_ALL);
+        db.createTable("all_", TABLE_CONSTRUCT_ALL);
     }
 
     private static void initDatabase_Installed(Database db) throws SQLException {
-        Table table = db.createTable("installed", TABLE_CONSTRUCT_INSTALLED);
+        db.createTable("installed", TABLE_CONSTRUCT_INSTALLED);
+    }
+
+    private static void initDatabase_AliasMap(Database db) throws SQLException {
+        db.createTable("aliasmap", TABLE_CONSTRUCT_ALIASMAP);
     }
 
     @com.github.xzzpig.pigutils.annoiation.API
     @InCommand
-    public static JSONObject downloadProgramJson(String program) throws SQLException, IOException {
+    public static JSONObject downloadProgramJson(String program) throws SQLException, IOException, NullPointerException {
         Table table_all = database.getTable("all_");
         ResultSet resultSet = table_all.select().setColums("name", "url").setWhere("name = \"" + program + "\"").select();
         if (resultSet.next()) {
             URL url = new URL(resultSet.getString("url"));
-            try (InputStream inputStream = url.openStream()) {
-                return new JSONObject(new JSONTokener(inputStream)).put("jsonURL", url.toString());
-            }
+            return downloadProgramJson(url);
         } else {
             throw new NullPointerException("no program named " + program + " found in the table all_");
         }
@@ -448,7 +465,16 @@ public class API {
 
     @com.github.xzzpig.pigutils.annoiation.API
     @InCommand
+    public static JSONObject downloadProgramJson(URL url) throws SQLException, IOException {
+        try (InputStream inputStream = url.openStream()) {
+            return new JSONObject(new JSONTokener(inputStream)).put("jsonURL", url.toString());
+        }
+    }
+
+    @com.github.xzzpig.pigutils.annoiation.API
+    @InCommand
     public static boolean isInstalled(String program) throws SQLException {
+        program = getRawName(program);
         Table table = database.getTable("installed");
         ResultSet resultSet = table.select().setColums("name").setWhere("name = \"" + program + "\"").select();
         if (resultSet.next())
@@ -484,5 +510,19 @@ public class API {
                 if (!deleteDir(file))
                     return false;
         return dir.delete();
+    }
+
+    @com.github.xzzpig.pigutils.annoiation.API
+    @AfterPlugin
+    public static @NotNull String getRawName(@NotNull String alias) throws SQLException {
+        ResultSet resultSet = database.getTable("aliasmap").select().setColums("*").setWhere("alias = \"" + alias + "\"").select();
+        if (!resultSet.next())
+            return alias;
+        return resultSet.getString("name");
+    }
+
+    @com.github.xzzpig.pigutils.annoiation.API
+    public static @NotNull String[] getPath() {
+        return System.getenv("Path").split(System.getProperty("path.separator", ";"));
     }
 }

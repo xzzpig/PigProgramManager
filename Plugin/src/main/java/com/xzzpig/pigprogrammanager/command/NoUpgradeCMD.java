@@ -15,6 +15,11 @@ public class NoUpgradeCMD implements CommandExecutor {
         if (cmd.commands.size() < 2)
             return "<program>不可为空";
         String program = cmd.commands.get(1);
+        try {
+            program = API.getRawName(program);
+        } catch (SQLException e) {
+            return "数据库操作失败";
+        }
         try {//确实软件未安装
             if (!API.isInstalled(program))
                 return program + " 未安装";

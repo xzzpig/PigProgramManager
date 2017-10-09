@@ -15,7 +15,7 @@
             -y  #免除确认(危险操作、主版本号更新)
             -f  #强制更新到最新版本,包括更新号改变
     noupgrade   #禁止/允许软件更新
-    update      #更新软件索引
+    update      #更新软件索引(软件重名时不覆盖,提示错误:数据库操作失败)
     remove:     #移除软件
     autoremove    #移除为被依赖的软件
     setup       #重新配置软件
@@ -167,5 +167,33 @@
         "actions":[],       #同意后执行的流程
         "msg":"",
         "careFail":false    #是否关注执行失败
+    },
+    {
+        "name":"CheckMD5",
+        "file":"",
+        "md5":"",
+        "gc":true,
+        "failError":"MD5CheckException",
+        "failMsg":"MD5CheckFailed"
+    },
+    {
+        "name":"If",        #执行conditon中的Json，若无错误则执行success，否则执行???，finally必定执行
+        "condition":{},
+        "success":[],       #JsonArray<JsonObject>
+        "finally":[],       #JsonArray<JsonObject>
+        "???":[]            #JsonArray<JsonObject>,???为抛出的错误的name
+    },
+    {
+        "name":"Exists",     #判断文件是否存在
+        "fileReg":"",       #要判断的文件名称的正则
+        "dirs":[],          #查找的路径
+        "failError":"FindFailedException",
+        "failMsg":"FileFindFailed"
+    },
+    {
+        "name":"ExistInPath",#判断文件是否存在于环境变量Path中
+        "fileReg":"",       #要判断的文件名称的正则
+        "failError":"FindInPathFailedException",
+        "failMsg":"FileFindInPathFailed"
     }
     ]

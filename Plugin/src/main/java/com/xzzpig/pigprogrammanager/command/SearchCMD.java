@@ -10,17 +10,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SearchCMD implements CommandExecutor {
-    private static final CommandInfo COMMAND_INFO = new CommandInfo("search", "搜索软件", new String[]{"<str>"}, null, null);
+    private static final CommandInfo COMMAND_INFO = new CommandInfo("search", "搜索软件", new String[]{"<str>"}, new String[][]{{"d", "深度搜索"}}, null);
 
     @Override public String execute(Command cmd) {
         if (cmd.commands.size() < 2)
             return "<str>不可为空";
         String str = cmd.commands.get(1);
+        if (cmd.hasSign("d")) {
+            StringBuilder sb = new StringBuilder();
+            for (char c : str.toCharArray())
+                sb.append(c).append('%');
+            str = sb.toString();
+        }
         try {
-            Table table_all = API.database.getTable("all_");
+            Table table_aliasmap = API.database.getTable("aliasmap");
             API.echo("搜索结果:");
-            ResultSet resultSet = table_all.select().setColums("name").setWhere("name like \"%" + str + "%\"").select();
-            while (resultSet.next()) API.echo('\t', resultSet.getString("name"));
+            int i = 0;
+            ResultSet resultSet = table_aliasmap.select().setColums("alias").setWhere("alias like \"%" + str + "%\"").select();
+            while (resultSet.next()) API.echo(++i, '\t', resultSet.getString("alias"));
+            if (i == 0) {
+                API.echo("\t无");
+                API.echo("未找到结果?试试 ppm search -d", str);
+            }
         } catch (SQLException e) {
             API.verbException(e);
             return "数据库打开/操作失败";

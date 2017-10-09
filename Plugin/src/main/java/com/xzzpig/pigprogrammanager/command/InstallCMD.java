@@ -19,19 +19,17 @@ public class InstallCMD implements CommandExecutor {
         if (cmd.commands.size() < 2)
             return "<program>不可为空";
         String program = cmd.commands.get(1);
+        try {
+            program = API.getRawName(program);
+        } catch (SQLException e) {
+            return "数据库操作失败";
+        }
         try {//确实软件未安装
             if (API.isInstalled(program))
                 return program + " 已安装";
         } catch (SQLException e) {
             return "数据库操作失败";
         }
-
-        if (cmd.hasSign("d"))
-            cmd.signMap.put("d", cmd.signMap.getOrDefault("d", new File("./").getAbsolutePath()));
-        else
-            cmd.signMap.put("d", API.solveVars("${Dir:Programs}/") + program);
-        cmd.signMap.put("program", program);
-        cmd.signMap.put("d", new File(cmd.signMap.get("d")).getAbsolutePath());
         JSONObject jsonObject;
         try {
             System.out.print("开始下载软件安装配置文件");
@@ -39,9 +37,21 @@ public class InstallCMD implements CommandExecutor {
             System.out.println("(完成)");
         } catch (Exception e) {
             API.verbException(e);
-            return "Program安装说明文件下载失败";
+            if (e instanceof NullPointerException) {
+                API.echo("未在数据库中找到软件:" + program);
+                API.echo("尝试使用命令", "ppm update 更新数据库", "或", "ppm search", program, "搜索名字相似的软件");
+            }
+            return "Program安装说明文件下载失败(" + e.getLocalizedMessage() + ")";
         }
         cmd.signMap.put("URL_JSON", jsonObject.optString("jsonURL"));
+        program = jsonObject.optString("name");
+        cmd.signMap.put("program", program);
+        if (cmd.hasSign("d"))
+            cmd.signMap.put("d", cmd.signMap.getOrDefault("d", new File("./").getAbsolutePath()));
+        else
+            cmd.signMap.put("d", API.solveVars("${Dir:Programs}/") + program);
+        cmd.signMap.put("program", program);
+        cmd.signMap.put("d", new File(cmd.signMap.get("d")).getAbsolutePath());
         if (jsonObject.has("depends")) {//处理依赖
             JSONArray dependsArray = jsonObject.getJSONArray("depends");
             for (int i = 0; i < dependsArray.length(); i++) {
@@ -73,7 +83,7 @@ public class InstallCMD implements CommandExecutor {
         if (size == null)
             size = new JSONObject();
         if (!API.needConfirm("安装将需要下载:" + size.optString("download", "unknown") + ",占用:" + size.optString("install", "unknown")))
-            return "";
+            return "不同意下载";
         JSONObject steps = jsonObject.optJSONObject("steps");
         JSONArray step;
         if (steps != null) {
@@ -105,7 +115,7 @@ public class InstallCMD implements CommandExecutor {
             API.database.getTable("installed").insert(map);
         } catch (SQLException e) {
             API.verbException(e);
-            API.echo("数据库插入失败");
+            API.echo("数据库插入失败(" + e.getLocalizedMessage() + ")");
         }
         JSONArray depends = jsonObject.optJSONArray("depends");
         if (depends != null)

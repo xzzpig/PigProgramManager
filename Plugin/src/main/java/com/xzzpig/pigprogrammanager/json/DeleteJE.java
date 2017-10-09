@@ -18,7 +18,9 @@ public class DeleteJE implements JsonExecutor {
         File file = new File(jsonObject.optString("file"));
         if (!file.exists())
             return true;
-        API.needConfirm("将删除文件:" + file.getAbsolutePath());
+        if (!API.needConfirm("将删除文件:" + file.getAbsolutePath())) {
+            throw new JsonExecuteException("DeleteFailedException", "ConfirmCanceled");
+        }
         if (!API.deleteDir(file))
             throw new JsonExecuteException("DeleteFailedException", "file(" + file.getAbsolutePath() + ") delete failed");
         return true;

@@ -36,6 +36,7 @@ public class UpgradeCMD implements CommandExecutor {
                     }
                 }
                 jsonObject = API.downloadProgramJson(program);
+                jsonObject = new JSONObject(API.solveVars(jsonObject.toString()));
                 steps = jsonObject.optJSONObject("steps");
                 if (steps != null) {
                     step = steps.optJSONArray("install");
@@ -102,7 +103,7 @@ public class UpgradeCMD implements CommandExecutor {
                     if (!API.executeCommand(command))
                         API.echo("更新失败");
                 }
-                API.echo("全部軟件更新完成");
+                API.echo("全部软件更新完成");
             } catch (SQLException e) {
                 API.verbException(e);
                 return "数据库查询失敗";

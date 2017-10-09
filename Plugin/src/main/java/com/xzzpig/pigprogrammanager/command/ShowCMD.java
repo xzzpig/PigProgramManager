@@ -6,6 +6,8 @@ import com.xzzpig.pigprogrammanager.api.Command;
 import com.xzzpig.pigprogrammanager.api.CommandExecutor;
 import com.xzzpig.pigprogrammanager.api.CommandInfo;
 
+import java.sql.SQLException;
+
 public class ShowCMD implements CommandExecutor {
     private static final CommandInfo COMMAND_INFO = new CommandInfo("show", "显示软件信息", new String[]{"<program>"}, null, null);
 
@@ -13,6 +15,11 @@ public class ShowCMD implements CommandExecutor {
         if (cmd.commands.size() < 2)
             return "<program>不可为空";
         String program = cmd.commands.get(1);
+        try {
+            program = API.getRawName(program);
+        } catch (SQLException e) {
+            return "数据库操作失败";
+        }
         cmd.signMap.put("program", program);
         JSONObject jsonObject;
         try {
@@ -22,6 +29,7 @@ public class ShowCMD implements CommandExecutor {
             return "Program安装说明文件下载失败";
         }
         API.echo(program, "软件信息:");
+        API.echo('\t', "软件名称:" + jsonObject.optString("name", "null"));
         API.echo('\t', "软件别名:" + jsonObject.optString("alias", "null"));
         API.echo('\t', "官网:" + jsonObject.optString("homepage", "null"));
         API.echo('\t', "最新版本:" + jsonObject.optString("version", "null"));

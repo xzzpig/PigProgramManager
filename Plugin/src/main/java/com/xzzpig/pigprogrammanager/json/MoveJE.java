@@ -24,7 +24,9 @@ public class MoveJE implements JsonExecutor {
         try {
             to.getParentFile().mkdirs();
         } catch (Exception e) {}
-        API.needConfirm("移动文件", from.getAbsolutePath(), "到", to.getAbsolutePath());
+        if (!API.needConfirm("移动文件", from.getAbsolutePath(), "到", to.getAbsolutePath())) {
+            throw new JsonExecuteException("MoveFailedException", "ConfirmCanceled");
+        }
         try {
             if (!new File(from.getAbsolutePath()).renameTo(new File(to.getAbsolutePath())))
                 throw new RuntimeException(from + " copy to " + to + " failed");
